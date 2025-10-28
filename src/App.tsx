@@ -5,9 +5,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import MatchesPage from './components/MatchesPage';
-import GroupsPage from './components/GroupsPage';
-import TeamsPage from './components/TeamsPage';
+import MatchesPage from './pages/MatchesPage';
+import GroupsPage from './pages/GroupsPage';
+import TeamsPage from './pages/TeamsPage';
 
 const App: FC = () => {
  return (

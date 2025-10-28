@@ -1,8 +1,6 @@
 import type { FC } from 'react';
-import {Route , Routes, Link} from 'react-router-dom';
-import GroupsPage from '../GroupsPage';
-import TeamsPage from '../TeamsPage';
-import MatchesPage from '../MatchesPage';
+import { Link} from 'react-router-dom';
+import styled from 'styled-components';
 
 const HomeMainSection: FC = () => {
   return (
@@ -11,11 +9,11 @@ const HomeMainSection: FC = () => {
         <h1>Welcome to World Cup 2026</h1>
       </section>
       
-      <div>
-        <Link to="/matches">Matches</Link>
-        <Link to="/groups">Groups</Link>
-        <Link to="/teams">Teams</Link>
-      </div>
+      <Container>
+        <ButtonLink to="/matches">Matches</ButtonLink>
+        <ButtonLink to="/groups">Groups</ButtonLink>
+        <ButtonLink to="/teams">Teams</ButtonLink>
+      </Container>
       
     </>
    
@@ -23,3 +21,22 @@ const HomeMainSection: FC = () => {
   );
 };  
 export default HomeMainSection;
+
+  const ButtonLink= styled(Link)`
+    text-decoration: none;
+    color: white;
+    background-color: #007bff;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    width: 150px;
+    `;
+  const Container=styled.div`
+    display: flex;
+    flex-direction: column;  
+    align-items: center;     
+    justify-content: center; 
+    height: 100vh;           
+    gap: 20px;               
+`;
