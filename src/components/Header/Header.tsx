@@ -10,7 +10,7 @@ const HeaderContainer = styled.header`
   align-items: center;
   justify-content: space-between;
   padding: 1rem 4rem;
-  background-color: #111;
+  background-color: #000;
   width: 100%;
   position: fixed;
   top: 0;
@@ -64,7 +64,7 @@ const CartCount = styled.span`
   top: -5px;
   right: -5px;
   background-color: #fff;
-  color: #111;
+  color: #000;
   border-radius: 50%;
   padding: 2px 6px;
   font-size: 0.75rem;

@@ -38,7 +38,7 @@ const StyledButton = styled.button`
   cursor: pointer;
   border-radius: 5px;
   border: none;
-  background-color: #111111;
+  background-color: #000;
   color: white;
   transition: background-color 0.3s;
   font-weight: 400;
