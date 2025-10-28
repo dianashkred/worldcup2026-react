@@ -31,6 +31,9 @@ export default HomeMainSection;
     font-weight: bold;
     text-align: center;
     width: 150px;
+    &:hover {
+    background-color: #0056b3; // darker on hover
+  }
     `;
   const Container=styled.div`
     display: flex;
