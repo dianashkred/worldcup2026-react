@@ -1,8 +1,0 @@
-type TeamsComponentProps={
-    country: string,
-
-}
-
-export default function TeamsComponent(){
-
-}
