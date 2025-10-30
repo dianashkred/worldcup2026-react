@@ -1,3 +1,5 @@
+import type { Group } from "./Group"
+
 export type Team={
     id: number,
     name: string,
@@ -6,8 +8,8 @@ export type Team={
     confederation:string,
     continent: string,
     groupId: number,
-    group: Groupe,
+    group: Group,
     createdAt: Date,
     updatedAt: Date,
-    flagImagePath:strinh
+    flagImagePath:string
 }
