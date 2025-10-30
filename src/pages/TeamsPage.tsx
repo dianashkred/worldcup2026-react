@@ -28,6 +28,7 @@ const TeamsPage: FC = () => {
   return(
   <>
     <Header/>
+    <h1> The Teams: </h1>
     <TeamsComponent team={algeriaTeam}/>
     <Footer/>
   </>
