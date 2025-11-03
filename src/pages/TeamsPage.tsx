@@ -3,36 +3,36 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import type { Team } from '../Types/Team';
 import TeamsComponent from '../components/Teams/TeamsComponent';
+import styled from 'styled-components';
+import TeamsPAgeComponent from '../components/Teams/TeamsPAgeComponent';
 
 
 
-const algeriaTeam: Team = {
-  id: 42,
-  name: "Algeria",
-  code: "ALG",
-  flag: "🇩🇿",
-  confederation: "CAF",
-  continent: "Africa",
-  groupId: 11,
-  group: {
-    id: 11,
-    name: "K",
-    teams:[]
-  },
-  createdAt: new Date("2025-10-12T20:23:54.373Z"),
-  updatedAt: new Date("2025-10-12T20:23:54.373Z"),
-  flagImagePath: "/public/flags/ALG.png",
-};
 
 const TeamsPage: FC = () => {
   return(
   <>
     <Header/>
-    <h1> The Teams: </h1>
-    <TeamsComponent team={algeriaTeam}/>
+    <Container>
+        <TeamsPAgeComponent/>
+    </Container>
     <Footer/>
   </>
   );
 };
 
+
 export default TeamsPage;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;  /* empile les éléments verticalement */
+  align-items: center;     /* centre horizontalement */
+  justify-content: flex-start; /* aligne en haut de la page */
+  min-height: 100vh;       /* prend toute la hauteur, sans forcer à coller en bas */
+  padding-top: 160px;      /* laisse de l’espace sous le header fixe (ajuste la valeur selon sa hauteur) */
+  gap: 20px;               /* espace entre les boutons */
+`;
+
+
+
