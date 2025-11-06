@@ -11,10 +11,22 @@ export type Match={
     stadium: Stadium,
     status: string,
     stage: string,
-    date: Date,
+    date: string,
     availableSeats: number,
     priceMultiplier: number,
     createdAt:Date,
     updatedAt:Date
 
 }
+
+/*export interface Match {
+  id: number;
+  homeTeam: Team;
+  awayTeam: Team;
+  stadium: Stadium;
+  date: string;
+  stage: string;
+  status: string;
+  availableSeats: number;
+  categories: Record<string, MatchCategory>;
+}*/

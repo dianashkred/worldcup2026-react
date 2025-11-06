@@ -4,7 +4,7 @@ const BASE_URL = "https://worldcup2026.shrp.dev";
 
 
 export async function getAllMatches(): Promise<Match[]> {
-  const res = await fetch(`${BASE_URL}/matches/availability`);
+  const res = await fetch(`${BASE_URL}/matches`);
   if (!res.ok) throw new Error("Failed to fetch matches");
 
   const data = await res.json();
@@ -17,7 +17,7 @@ export async function getAllMatches(): Promise<Match[]> {
 }
 
 export async function getMatchById(id: number): Promise<Match> {
-  const res = await fetch(`${BASE_URL}/matches/${id}/availability`);
+  const res = await fetch(`${BASE_URL}/matches/${id}`);
   if (!res.ok) throw new Error("Match not found");
 
   const data = await res.json();

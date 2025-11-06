@@ -8,10 +8,11 @@ interface ButtonProps {
   label: string;
   to?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement> | React.FormEvent<HTMLFormElement>) => void;
+  style?: boolean;
 }
 
 
-const Button: FC<ButtonProps> = ({ label, to, onClick }) => {
+const Button: FC<ButtonProps> = ({ label, to, onClick, style }) => {
   const navigate = useNavigate();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -22,7 +23,7 @@ const Button: FC<ButtonProps> = ({ label, to, onClick }) => {
     }
   };
   return (
-    <StyledButton onClick={handleClick}>
+    <StyledButton onClick={handleClick} className={!style ? 'circleStyle' : ''}>
       {label}
     </StyledButton>
   );
@@ -35,6 +36,7 @@ const StyledButton = styled.button`
   height: 52px;
   padding: 10px 20px;
   font-size: 16px;
+  text-align: center;
   cursor: pointer;
   border-radius: 5px;
   border: none;
@@ -48,4 +50,12 @@ const StyledButton = styled.button`
   &:hover {
     background-color: #3b3b3bff;
   }
+  
+  &:circleStyle {
+    background-color: #6095deff;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #4b57dbff;
+    }
 `;
