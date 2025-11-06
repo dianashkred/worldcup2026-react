@@ -16,6 +16,7 @@ const Button: FC<ButtonProps> = ({ label, to, onClick, style }) => {
   const navigate = useNavigate();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     if (to) {
       navigate(to);
     } else if (onClick) {
@@ -23,7 +24,7 @@ const Button: FC<ButtonProps> = ({ label, to, onClick, style }) => {
     }
   };
   return (
-    <StyledButton onClick={handleClick} className={!style ? 'circleStyle' : ''}>
+    <StyledButton onClick={handleClick} $circle={!style}>
       {label}
     </StyledButton>
   );
@@ -31,7 +32,7 @@ const Button: FC<ButtonProps> = ({ label, to, onClick, style }) => {
 
 export default Button;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ $circle?: boolean }>`
   width: 140px;
   height: 52px;
   padding: 10px 20px;
@@ -51,11 +52,23 @@ const StyledButton = styled.button`
     background-color: #3b3b3bff;
   }
   
-  &:circleStyle {
-    background-color: #6095deff;
-    color: #ffffff;
+  ${({ $circle }) =>
+    $circle &&
+    css`
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background-color: #6095de;
+      font-size: 24px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+      color: #ffffff;
 
     &:hover {
       background-color: #4b57dbff;
-    }
+    `}
 `;
