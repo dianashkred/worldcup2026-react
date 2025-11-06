@@ -4,7 +4,7 @@ import Footer from '../components/Footer/Footer';
 import type { Team } from '../Types/Team';
 import TeamsComponent from '../components/Teams/TeamsComponent';
 import styled from 'styled-components';
-import TeamsPAgeComponent from '../components/Teams/TeamsPAgeComponent';
+import TeamsPageComponent from '../components/Teams/TeamsPAgeComponent';
 
 
 
@@ -14,7 +14,7 @@ const TeamsPage: FC = () => {
   <>
     <Header/>
     <Container>
-        <TeamsPAgeComponent/>
+        <TeamsPageComponent/>
     </Container>
     <Footer/>
   </>

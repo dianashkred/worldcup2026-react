@@ -1,41 +1,60 @@
 import { useEffect, useState, type FC } from 'react';
-import type {Team} from '../../Types/Team';
+import type { Team } from '../../Types/Team';
 
 
-import styled from 'styled-components';
+
+
 import TeamsComponent from './TeamsComponent';
 import { getAllTeams } from '../../services/api/teamsService';
+import TeamsFilterComponent from './TeamsFilterComponent';
 
 
 
 
-const TeamsPage: FC = () => {
+const TeamsPageComponent: FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
-  useEffect(()=>{
-    async function fetchTeams(){
-      let allTeams = await getAllTeams()
-    setTeams(allTeams)
-    }
+  const [allTeams,setAllTeams]=useState<Team[]>([]);
+
+
+  useEffect(() => {
+    
     fetchTeams();
-  },[]);
-    
-    
-  
-  
-  return(
-    
-  <>
-    
-    <span>
+  }, []);
+
+  async function fetchTeams() {
+      let newTeams = await getAllTeams()
+      setTeams(newTeams);
+      setAllTeams(newTeams);
+    }
+
+  function filterTeams(continent: string) {
+    const filteredTeams =
+      continent === ""
+        ? allTeams
+        : allTeams.filter((team) =>
+          team.continent === continent);
+    setTeams(filteredTeams);
+  }
+
+
+
+
+
+  return (
+
+    <>
+
+      <span>
         <h1> The Teams: </h1>
-        {teams.map((team)=><TeamsComponent team={team}/>)}
-    </span>
-    
-  </>
+        <TeamsFilterComponent filterTeams={filterTeams} />
+        {teams.map((team) => <TeamsComponent team={team} />)}
+      </span>
+
+    </>
   )
 };
 
 
-export default TeamsPage;
+export default TeamsPageComponent;
 
 
