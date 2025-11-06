@@ -8,10 +8,11 @@ interface ButtonProps {
   label: string;
   to?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement> | React.FormEvent<HTMLFormElement>) => void;
+  className?: string;
 }
 
 
-const Button: FC<ButtonProps> = ({ label, to, onClick }) => {
+const Button: FC<ButtonProps> = ({ className, label, to, onClick }) => {
   const navigate = useNavigate();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -22,7 +23,7 @@ const Button: FC<ButtonProps> = ({ label, to, onClick }) => {
     }
   };
   return (
-    <StyledButton onClick={handleClick}>
+    <StyledButton className={className} onClick={handleClick}>
       {label}
     </StyledButton>
   );
