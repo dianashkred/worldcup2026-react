@@ -24,7 +24,7 @@ const Button: FC<ButtonProps> = ({ label, to, onClick, style }) => {
     }
   };
   return (
-    <StyledButton onClick={handleClick} $circle={!style}>
+    <StyledButton onClick={handleClick} $circle={style}>
       {label}
     </StyledButton>
   );
@@ -33,42 +33,41 @@ const Button: FC<ButtonProps> = ({ label, to, onClick, style }) => {
 export default Button;
 
 const StyledButton = styled.button<{ $circle?: boolean }>`
-  width: 140px;
-  height: 52px;
-  padding: 10px 20px;
-  font-size: 16px;
-  text-align: center;
   cursor: pointer;
-  border-radius: 5px;
   border: none;
-  background-color: #000;
-  color: white;
-  transition: background-color 0.3s;
   font-weight: 400;
-  line-height: 27px;
+  color: #fff;
+  background-color: #000;
+  font-size: 16px;
+  transition: 0.3s;
   letter-spacing: 0.36px;
 
-  &:hover {
-    background-color: #3b3b3bff;
-  }
-  
   ${({ $circle }) =>
-    $circle &&
-    css`
+    $circle
+      ? `
       width: 45px;
       height: 45px;
       border-radius: 50%;
       background-color: #6095de;
-      font-size: 24px;
-      font-weight: 500;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 24px;
+      font-weight: 500;
       padding: 0;
       line-height: 1;
-      color: #ffffff;
-
-    &:hover {
-      background-color: #4b57dbff;
+      &:hover {
+        background-color: #4b57db;
+      }
+    `
+      : `
+      width: 140px;
+      height: 52px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      &:hover {
+        background-color: #3b3b3b;
+      }
     `}
 `;
+

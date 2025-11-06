@@ -34,7 +34,7 @@ const MatchCard: FC<MatchCardProps> = ({ match }) => {
       </Details>
 
       <PlusButtonWrapper>
-        <Button label="+" onClick={handleAddClick} style={false}/>
+        <Button label="+" onClick={handleAddClick} style={true}/>
       </PlusButtonWrapper>
     </CardContainer>
   );
