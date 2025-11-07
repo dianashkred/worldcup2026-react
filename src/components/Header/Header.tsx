@@ -30,9 +30,9 @@ const Nav = styled.nav`
   margin-right: 100px;
 `;
 
-const NavLink = styled(Link)<{ isActive: boolean }>`
+const NavLink = styled(Link)<{  $isActive: boolean }>`
   text-decoration: none;
-  color: ${(props) => (props.isActive ? '#1c26dbff' : '#ffffffff')};  font-size: 15px;
+  color: ${(props) => (props. $isActive ? '#1c26dbff' : '#ffffffff')};  font-size: 15px;
   font-family: Inter, sans-serif;
   font-weight: 400;
   line-height: 20px;
@@ -78,19 +78,19 @@ const Header: FC = () => {
     <HeaderContainer>
         <Logo  src={logoIcon} alt="Logo"/>
       <Nav>
-        <NavLink to="/" isActive={location.pathname === '/'}>
+        <NavLink to="/"  $isActive={location.pathname === '/'}>
           Home
         </NavLink>
-        <NavLink to="/maches" isActive={location.pathname === '/menu'}>
+        <NavLink to="/matches"  $isActive={location.pathname === '/matches'}>
           Matches
         </NavLink>
-        <NavLink to="teams" isActive={false}>
+        <NavLink to="teams"  $isActive={false}>
           Teams
         </NavLink>
-        <NavLink to="/groupes" isActive={false}>
+        <NavLink to="/groupes"  $isActive={false}>
           Groupes
         </NavLink>
-          <NavLink to="/login" isActive={location.pathname === '/login'}>
+          <NavLink to="/login"  $isActive={location.pathname === '/login'}>
             Login
           </NavLink>
       </Nav>

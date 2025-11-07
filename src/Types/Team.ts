@@ -8,7 +8,7 @@ export type Team={
     confederation:string,
     continent: string,
     groupId: number,
-    group: Group,
+    group?: Group,
     createdAt: Date,
     updatedAt: Date,
     flagImagePath:string
