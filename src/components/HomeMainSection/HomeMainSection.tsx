@@ -8,7 +8,7 @@ const HomeMainSection: FC = () => {
     <Container>
       <Button label="Matches" to='/matches'/>
       <Button label="Teams" to='/teams'/>
-      <Button label="Groups" to='/group'/>
+      <Button label="Groups" to='/groups'/>
       <Button label= "Sign up" to='/login'/>
       
     </Container>

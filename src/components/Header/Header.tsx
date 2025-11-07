@@ -84,11 +84,11 @@ const Header: FC = () => {
         <NavLink to="/matches"  $isActive={location.pathname === '/matches'}>
           Matches
         </NavLink>
-        <NavLink to="teams"  $isActive={false}>
+        <NavLink to="/teams"  $isActive={location.pathname === '/teams'}>
           Teams
         </NavLink>
-        <NavLink to="/groupes"  $isActive={false}>
-          Groupes
+        <NavLink to="/groups"  $isActive={location.pathname === '/groups'}>
+          Groups
         </NavLink>
           <NavLink to="/login"  $isActive={location.pathname === '/login'}>
             Login
