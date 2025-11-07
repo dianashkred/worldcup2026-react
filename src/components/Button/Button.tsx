@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 interface ButtonProps {
   label: string;
   to?: string;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement> | React.FormEvent<HTMLFormElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   style?: boolean;
 }
 

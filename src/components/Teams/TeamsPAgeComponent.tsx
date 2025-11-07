@@ -22,7 +22,7 @@ const TeamsPageComponent: FC = () => {
   }, []);
 
   async function fetchTeams() {
-      let newTeams = await getAllTeams()
+      const newTeams = await getAllTeams()
       setTeams(newTeams);
       setAllTeams(newTeams);
     }
