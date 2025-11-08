@@ -1,9 +1,47 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation,useNavigate} from 'react-router-dom';
 import type { FC } from 'react';
 import styled from 'styled-components';
 import logoIcon from '../../assets/icons/logo.png';
 import cartIcon from '../../assets/icons/cart-icon.svg';
+import { useSelector } from "react-redux";
+import type { RootState } from "../../features/store";
 
+
+
+const Header: FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const cartCount = useSelector((state: RootState) => state.cart.count);
+  
+  return (
+    <HeaderContainer>
+        <Logo  src={logoIcon} alt="Logo"onClick={() => navigate('/')}/>
+      <Nav>
+        <NavLink to="/"  $isActive={location.pathname === '/'}>
+          Home
+        </NavLink>
+        <NavLink to="/matches"  $isActive={location.pathname === '/matches'}>
+          Matches
+        </NavLink>
+        <NavLink to="/teams"  $isActive={location.pathname === '/teams'}>
+          Teams
+        </NavLink>
+        <NavLink to="/groups"  $isActive={location.pathname === '/groups'}>
+          Groups
+        </NavLink>
+          <NavLink to="/login"  $isActive={location.pathname === '/login'}>
+            Login
+          </NavLink>
+      </Nav>
+      <CartContainer to="/order">
+        <CartIcon src={cartIcon} alt="Cart"/>
+        <CartCount>{cartCount}</CartCount>
+      </CartContainer>
+    </HeaderContainer>
+  );
+};
+
+export default Header;
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -70,36 +108,3 @@ const CartCount = styled.span`
   font-size: 0.75rem;
   font-weight: bold;
 `;
-
-const Header: FC = () => {
-  const location = useLocation();
-
-  return (
-    <HeaderContainer>
-        <Logo  src={logoIcon} alt="Logo"/>
-      <Nav>
-        <NavLink to="/"  $isActive={location.pathname === '/'}>
-          Home
-        </NavLink>
-        <NavLink to="/matches"  $isActive={location.pathname === '/matches'}>
-          Matches
-        </NavLink>
-        <NavLink to="/teams"  $isActive={location.pathname === '/teams'}>
-          Teams
-        </NavLink>
-        <NavLink to="/groups"  $isActive={location.pathname === '/groups'}>
-          Groups
-        </NavLink>
-          <NavLink to="/login"  $isActive={location.pathname === '/login'}>
-            Login
-          </NavLink>
-      </Nav>
-      <CartContainer to="/order">
-        <CartIcon src={cartIcon} alt="Cart"/>
-        <CartCount>0</CartCount>
-      </CartContainer>
-    </HeaderContainer>
-  );
-};
-
-export default Header;

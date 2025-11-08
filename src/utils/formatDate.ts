@@ -1,6 +1,6 @@
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return date.toLocaleString("fr-FR", {
+  return date.toLocaleString("en-EN", {
     weekday: "short",
     day: "2-digit",
     month: "short",

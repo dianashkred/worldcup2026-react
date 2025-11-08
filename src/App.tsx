@@ -13,10 +13,10 @@ const App: FC = () => {
       <Router>
         <Routes>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
           <Route path="/matches" element={<MatchesPage/>}/>
           <Route path="/groups" element={<GroupsPage/>}/>
           <Route path="/teams" element={<TeamsPage/>}/>
+         <Route path="/login" element={<LoginPage />} />
        </Routes>
       </Router>
     </div>

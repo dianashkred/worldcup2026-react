@@ -5,7 +5,6 @@ import Footer from "../components/Footer/Footer";
 import MatchList from "../components/Matches/MatchList";
 
 const MatchesPage: FC = () => {
-  //const [filters, setFilters] = useState({ team: "", date: "" });
   return (
     <>
       <Header />

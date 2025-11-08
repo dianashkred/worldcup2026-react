@@ -54,7 +54,7 @@ const MatchCard: FC<MatchCardProps> = ({ match }) => {
       </PlusButtonWrapper>
       </CardHeader>
 
-      {isExpanded && <MatchDetails matchId={match.id} stadium={stadium} />}
+      {isExpanded && <MatchDetails matchId={match.id} />}
     </CardContainer>
   );
 };

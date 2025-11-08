@@ -28,3 +28,5 @@ export type Match = {
   availableSeats: number;
   categories?: MatchCategories;
 };
+
+export type CategoryApi = keyof MatchCategories;
