@@ -1,10 +1,8 @@
 import type { FC } from 'react';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
-import type { Team } from '../Types/Team';
-import TeamsComponent from '../components/Teams/TeamsComponent';
 import styled from 'styled-components';
-import TeamsPageComponent from '../components/Teams/TeamsPageComponent';
+import TeamsPageComponent from '../components/Teams/TeamsPAgeComponent';
 
 
 
