@@ -9,6 +9,7 @@ import MatchCard from "./MatchCard";
 import MatchFilter from "./MatchFilter";
 import type { Team } from '../../Types/Team';
 import { getAllTeams } from "../../services/api/teamsService";
+import { useLocation } from "react-router-dom";
 
 const MatchList: FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -17,6 +18,7 @@ const MatchList: FC = () => {
   const [filters, setFilters] = useState({ team: "", date: "", group: "" });
   const [error, setError] = useState<string | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
+  const location = useLocation();
 
   useEffect(() => {
     async function loadData() {
@@ -69,7 +71,7 @@ const MatchList: FC = () => {
         const byDate =
           !filters.date ||
           new Date(m.date).toDateString() ===
-            new Date(filters.date).toDateString();
+          new Date(filters.date).toDateString();
 
         const homeGroup = m.homeTeam?.group?.name;
         const awayGroup = m.awayTeam?.group?.name;
@@ -83,6 +85,21 @@ const MatchList: FC = () => {
       })
     );
   }, [filters, matches]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const teamId = params.get("team");
+
+    if (teamId && teams.length > 0) {
+      const team = teams.find(t => t.id.toString() === teamId);
+      if (team) {
+        setFilters(prev => ({
+          ...prev,
+          team: team.name
+        }));
+      }
+    }
+  }, [location.search, teams]);
 
 
 
