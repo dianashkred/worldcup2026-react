@@ -4,15 +4,15 @@ import styled from 'styled-components';
 import logoIcon from '../../assets/icons/logo.png';
 import cartIcon from '../../assets/icons/cart-icon.svg';
 import { useSelector } from "react-redux";
+import { selectCartCount } from "../../features/cart/cartSlice";
 import type { RootState } from "../../features/store";
-
 
 
 const Header: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const cartCount = useSelector((state: RootState) => state.cart.count);
-  
+  const cartCount = useSelector((s: RootState) => selectCartCount(s));
+
   return (
     <HeaderContainer>
         <Logo  src={logoIcon} alt="Logo"onClick={() => navigate('/')}/>

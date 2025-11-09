@@ -1,16 +1,13 @@
 import styled from "styled-components";
 import type { Team } from "../../Types/Team";
 import Button from "../Button/Button";
+import {getFlagPath } from "../../utils/getFlagPath";
 
 type TeamsComponentProps = {
   team: Team;
 };
 
 export default function TeamsComponent({ team }: TeamsComponentProps) {
-  const getFlagPath = (flagPath: string) => {
-    if (!flagPath) return "";
-    return flagPath.replace(/^\/public/, "");
-  };
 
   return (
     <CardContainer>

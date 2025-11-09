@@ -6,25 +6,39 @@ export async function addTicketToCart(
   matchId: number,
   category: string,
   quantity: number
-): Promise<TicketCartResponse> {
+): Promise<TicketCartResponse["data"]> {
   const res = await fetch(`${BASE_URL}/tickets`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ matchId, category, quantity }),
   });
 
-  if (!res.ok) throw new Error("Failed to add ticket to cart");
+  if (!res.ok) {
+    throw new Error(`Failed to add ticket to cart (${res.status})`);
+  }
 
-  const data = await res.json();
-  return data.data || data;
+  const data: TicketCartResponse = await res.json();
+
+  return data.data || {
+    tickets: [],
+    totalPrice: 0,
+    expiresAt: "",
+  };
 }
 
 export async function getPendingTickets(): Promise<PendingTicketsResponse["data"]> {
   const res = await fetch(`${BASE_URL}/tickets/pending`);
   if (!res.ok) throw new Error("Failed to fetch pending tickets");
 
-  const data = await res.json();
+  const data: PendingTicketsResponse = await res.json();
   return data.data;
+}
+
+
+export async function getAllTickets(): Promise<TicketCartResponse["data"]["tickets"]> {
+  const res = await fetch(`${BASE_URL}/tickets`, { method: "GET" });
+  if (!res.ok) throw new Error("Failed to fetch tickets");
+
+  const data: TicketCartResponse = await res.json();
+  return data.data?.tickets || [];
 }

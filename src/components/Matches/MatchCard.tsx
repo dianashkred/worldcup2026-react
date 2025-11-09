@@ -1,63 +1,77 @@
 import { useState } from "react";
 import styled from "styled-components";
-import type { FC } from 'react';
+import type { FC } from "react";
 import type { Match } from "../../Types/Match";
 import { formatDate } from "../../utils/formatDate";
 import Button from "../Button/Button";
-import MatchDetails from "./MatchDetails";
-
-
+import MatchTicketPanel from "./MatchTicketPanel";
+import type { MatchSummary } from "../../features/cart/cartSlice";
+import { getFlagPath } from "../../utils/getFlagPath";
 
 interface MatchCardProps {
   match: Match;
 }
 
+
 const MatchCard: FC<MatchCardProps> = ({ match }) => {
   const { homeTeam, awayTeam, stadium, date } = match;
   const [isExpanded, setIsExpanded] = useState(false);
 
-  
+  const matchGroup = homeTeam?.group?.name ?? "Unknown";
 
-  const getFlagPath = (flagPath: string) => {
-    if (!flagPath) return "";
-    return flagPath.replace(/^\/public/, ""); 
+  const toggleDetails = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsExpanded((prev) => !prev);
   };
 
-    const matchGroup = homeTeam?.group?.name ?? "Unknown";
-
-    const toggleDetails = (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      setIsExpanded((prev) => !prev);
+  const summary: MatchSummary = {
+    date,
+    homeTeam: {
+      name: homeTeam.name,
+      flagImagePath: homeTeam.flagImagePath,
+      group: { name: homeTeam.group?.name },
+    },
+    awayTeam: {
+      name: awayTeam.name,
+      flagImagePath: awayTeam.flagImagePath,
+    },
+    stadium: {
+      name: stadium.name,
+      city: stadium.city,
+      countryCode: stadium.countryCode,
+    },
   };
-
 
   return (
     <CardContainer>
       <CardHeader>
-      <Teams>
-        <Flag src={getFlagPath(homeTeam.flagImagePath)} alt={homeTeam.name} />
-        <TeamName>{homeTeam.name}</TeamName>
-        <VS>vs</VS>
-        <TeamName>{awayTeam.name}</TeamName>
-        <Flag src={getFlagPath(awayTeam.flagImagePath)} alt={awayTeam.name} />
-        
-      </Teams>
-      <GroupText>Group: {matchGroup}</GroupText>
+        <Teams>
+          <Flag src={getFlagPath(homeTeam.flagImagePath)} alt={homeTeam.name} />
+          <TeamName>{homeTeam.name}</TeamName>
+          <VS>vs</VS>
+          <TeamName>{awayTeam.name}</TeamName>
+          <Flag src={getFlagPath(awayTeam.flagImagePath)} alt={awayTeam.name} />
+        </Teams>
 
-      <Details>
-        <DateText>{formatDate(date)}</DateText>
-        <PlaceText>{stadium.name}, {stadium.city}, {stadium.countryCode}</PlaceText>
-      </Details>
+        <GroupText>Group: {matchGroup}</GroupText>
 
-      <PlusButtonWrapper>
-        <Button label={isExpanded ? "−" : "+"} onClick={toggleDetails} style={true}/>
-      </PlusButtonWrapper>
+        <Details>
+          <DateText>{formatDate(date)}</DateText>
+          <PlaceText>
+            {stadium.name}, {stadium.city}, {stadium.countryCode}
+          </PlaceText>
+        </Details>
+
+        <PlusButtonWrapper>
+          <Button label={isExpanded ? "−" : "+"} onClick={toggleDetails} style={true} />
+        </PlusButtonWrapper>
       </CardHeader>
 
-      {isExpanded && <MatchDetails matchId={match.id} />}
+      {isExpanded && <MatchTicketPanel matchId={match.id} match={summary} />}
     </CardContainer>
   );
 };
+
 export default MatchCard;
 
 

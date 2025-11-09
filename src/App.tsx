@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import MatchesPage from './pages/MatchesPage';
 import GroupsPage from './pages/GroupsPage';
 import TeamsPage from './pages/TeamsPage';
+import OrderPage from './pages/OrderPage';
 
 const App: FC = () => {
  return (
@@ -16,7 +17,9 @@ const App: FC = () => {
           <Route path="/matches" element={<MatchesPage/>}/>
           <Route path="/groups" element={<GroupsPage/>}/>
           <Route path="/teams" element={<TeamsPage/>}/>
-         <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/order" element={<OrderPage />} />
+
        </Routes>
       </Router>
     </div>

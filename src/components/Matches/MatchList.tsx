@@ -50,7 +50,7 @@ const MatchList: FC = () => {
         }
       } catch (err) {
         console.error("Failed to load matches or groups:", err);
-        setError("Impossible de charger les matchs.");
+        setError("Failed to load matches.");
       }
     }
 
@@ -123,7 +123,7 @@ const MatchList: FC = () => {
           <MatchCard key={match.id} match={match} />
         ))
       ) : (
-        <NoResults>Aucun match trouvé.</NoResults>
+        <NoResults>No matches found.</NoResults>
       )}
     </Container>
   );
@@ -132,10 +132,14 @@ const MatchList: FC = () => {
 export default MatchList;
 
 const Container = styled.div`
+  display: flex;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 80px 20px;
+  margin-top: 80px;
+
 `;
 
 const ErrorText = styled.p`
@@ -150,8 +154,8 @@ const NoResults = styled.p`
   font-size: 1rem;
 `;
 const Title = styled.h1`
-  font-size: 40px;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 700;
   margin-bottom: 2rem;
   text-align: center;
   color: #000;
