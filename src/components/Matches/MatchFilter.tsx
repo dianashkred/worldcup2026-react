@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import type { FC } from "react";
 import type { Group } from "../../Types/Group";
+import Button from "../Button/Button"; 
 
 interface MatchFilterProps {
   selectedTeam: string;
@@ -18,7 +19,7 @@ const months = [
   "September", "October", "November", "December"
 ];
 
-const years = Array.from({ length: 11 }, (_, i) => 2020 + i); 
+const years = Array.from({ length: 11 }, (_, i) => 2020 + i);
 
 const MatchFilter: FC<MatchFilterProps> = ({
   selectedTeam,
@@ -38,7 +39,7 @@ const MatchFilter: FC<MatchFilterProps> = ({
     new Date(year, month + 1, 0).getDate();
 
   const getFirstDayOfMonth = (year: number, month: number) =>
-    new Date(year, month, 1).getDay(); 
+    new Date(year, month, 1).getDay();
 
   const handleDateSelect = (day: number) => {
     const chosen = new Date(selectedYear, selectedMonth, day);
@@ -50,12 +51,17 @@ const MatchFilter: FC<MatchFilterProps> = ({
     setShowCalendar(false);
   };
 
-  const handleClear = () => {
+  const handleClearDateOnly = () => {
     onFilterChange({
       team: selectedTeam,
       date: "",
       group: selectedGroup,
     });
+    setShowCalendar(false);
+  };
+
+  const handleClearAll = () => {
+    onFilterChange({ team: "", date: "", group: "" });
     setShowCalendar(false);
   };
 
@@ -65,7 +71,7 @@ const MatchFilter: FC<MatchFilterProps> = ({
 
   return (
     <FilterContainer>
-      {/* Filter by date */}
+      {/* Date filter */}
       <DateFilterWrapper>
         <DateButton onClick={() => setShowCalendar((p) => !p)}>
           {selectedDate
@@ -130,7 +136,7 @@ const MatchFilter: FC<MatchFilterProps> = ({
             </DaysGrid>
 
             <CalendarActions>
-              <ActionButton onClick={handleClear}>Clear</ActionButton>
+              <ActionButton onClick={handleClearDateOnly}>Clear</ActionButton>
               <ActionButton
                 onClick={() => {
                   onFilterChange({
@@ -159,15 +165,13 @@ const MatchFilter: FC<MatchFilterProps> = ({
           })
         }
       >
-       <option value="">All teams</option>
-       {teams.map((team) => (
+        <option value="">All teams</option>
+        {teams.map((team) => (
           <option key={team.id} value={team.name}>
             {team.name}
           </option>
         ))}
       </Select>
-
-
 
       {/* Group filter */}
       <Select
@@ -187,15 +191,19 @@ const MatchFilter: FC<MatchFilterProps> = ({
           </option>
         ))}
       </Select>
+
+      <ClearBtnWrap>
+        <Button label="Clear filters" onClick={handleClearAll} />
+      </ClearBtnWrap>
     </FilterContainer>
   );
 };
 
 export default MatchFilter;
 
-
 const FilterContainer = styled.div`
   display: flex;
+  align-items: center;  
   gap: 1rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
@@ -302,7 +310,6 @@ const ActionButton = styled.button`
   }
 `;
 
-
 const Select = styled.select`
   border: 1px solid #333;
   border-radius: 8px;
@@ -316,4 +323,10 @@ const Select = styled.select`
     outline: none;
     border-color: #6095de;
   }
+`;
+
+const ClearBtnWrap = styled.div`
+  display: flex;
+  align-items: center;
+  height: 42px; 
 `;

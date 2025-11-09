@@ -1,11 +1,11 @@
-export interface AuthResponse {
+export type AuthResponse = {
   success: boolean;
   data: {
     access_token: string;
   };
 }
 
-export interface UserProfile {
+export type UserProfile = {
   id: number;
   firstname: string;
   lastname: string;

@@ -1,11 +1,15 @@
-import React from 'react';
-import Login from '../components/Login/Login';
 import type { FC } from 'react';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
+
 
 const LoginPage: FC = () => {
-
-  return  <Login/>;
-
+  return(
+  <>
+    <Header/>
+    <Footer/>
+  </>
+  );
 };
 
 export default LoginPage;
