@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { useMemo, useState } from "react";
+import {  useMemo, useState } from "react";
 import type { RootState } from "../../features/store";
 import { clearCart, selectCartTickets, selectCartTotal } from "../../features/cart/cartSlice";
 import CartList from "./CartList";
@@ -19,6 +19,8 @@ const OrderSection = () => {
     dispatch(clearCart());
     setTimeout(() => setMessage(""), 3000);
   };
+
+  
 
   if (rows.length === 0) {
     return (
