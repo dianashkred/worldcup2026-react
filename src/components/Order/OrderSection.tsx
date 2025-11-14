@@ -1,31 +1,85 @@
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { RootState } from "../../features/store";
-import { clearCart, selectCartTickets, selectCartTotal } from "../../features/cart/cartSlice";
+import {
+  clearCart,
+  selectCartTickets,
+  selectCartTotal,
+  type CartItem,
+} from "../../features/cart/cartSlice";
 import CartList from "./CartList";
 import CartSummary from "./CartSummary";
 import Button from "../Button/Button";
+import { checkoutCartViaApi } from "../../services/api/ticketsService";
 
 const OrderSection = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const tickets = useSelector((s: RootState) => selectCartTickets(s));
   const total = useSelector((s: RootState) => selectCartTotal(s));
-  const [message, setMessage] = useState("");
-  const rows = useMemo(() => tickets, [tickets]);
 
-  const onConfirm = () => {
-    setMessage("Your order has been successfully confirmed!");
-    dispatch(clearCart());
-    setTimeout(() => setMessage(""), 3000);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [processing, setProcessing] = useState(false);
+
+  const rows: CartItem[] = useMemo(() => tickets, [tickets]);
+
+  const onConfirm = async () => {
+    if (!rows.length || processing) return;
+
+    setErrorMessage("");
+    setSuccessMessage("");
+    setProcessing(true);
+
+    try {
+      const paidTickets = await checkoutCartViaApi(rows);
+
+      dispatch(clearCart());
+
+      const count = paidTickets.length;
+      const baseText = "Your order has been successfully confirmed and paid.";
+      const withCount =
+        count > 0
+          ? `${baseText} You have ${count} ticket${count > 1 ? "s" : ""}.`
+          : baseText;
+
+      setSuccessMessage(withCount);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Unable to validate your cart. Please try again.";
+      setErrorMessage(message);
+    } finally {
+      setProcessing(false);
+    }
   };
 
   if (rows.length === 0) {
     return (
       <SectionContainer>
         <SectionTitle>Your Cart</SectionTitle>
+
+        {successMessage && (
+          <ConfirmationMessage>{successMessage}</ConfirmationMessage>
+        )}
+        {errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
+
         <EmptyMessage>Your cart is empty.</EmptyMessage>
-        <Button label="Return" onClick={() => window.location.href = '/matches'} />
+
+        <ButtonsRow>
+          <Button
+            label="Back to matches"
+            onClick={() => navigate("/matches")}
+          />
+          <Button
+            label="View my tickets"
+            onClick={() => navigate("/tickets")}
+          />
+        </ButtonsRow>
       </SectionContainer>
     );
   }
@@ -33,9 +87,32 @@ const OrderSection = () => {
   return (
     <SectionContainer>
       <SectionTitle>Your Cart</SectionTitle>
+
       <CartList items={rows} />
-      <CartSummary total={total} onConfirm={onConfirm} />
-      {message && <ConfirmationMessage>{message}</ConfirmationMessage>}
+      <CartSummary
+        total={total}
+        onConfirm={onConfirm}
+        disabled={processing || rows.length === 0}
+        processing={processing}
+      />
+
+      {successMessage && (
+        <AfterOrderBlock>
+          <ConfirmationMessage>{successMessage}</ConfirmationMessage>
+          <ButtonsRow>
+            <Button
+              label="Back to matches"
+              onClick={() => navigate("/matches")}
+            />
+            <Button
+              label="View my tickets"
+              onClick={() => navigate("/tickets")}
+            />
+          </ButtonsRow>
+        </AfterOrderBlock>
+      )}
+
+      {errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
     </SectionContainer>
   );
 };
@@ -79,4 +156,28 @@ const ConfirmationMessage = styled.div`
   text-align: center;
 `;
 
+const ErrorBox = styled.div`
+  background-color: #c53030;
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+  color: #fff;
+  max-width: 600px;
+  text-align: center;
+`;
 
+const ButtonsRow = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-top: 1.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+const AfterOrderBlock = styled.div`
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;

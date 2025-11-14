@@ -1,40 +1,63 @@
-import { Link, useLocation,useNavigate} from 'react-router-dom';
-import type { FC } from 'react';
-import styled from 'styled-components';
-import logoIcon from '../../assets/icons/logo.png';
-import cartIcon from '../../assets/icons/cart-icon.svg';
-import { useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import type { FC } from "react";
+import styled from "styled-components";
+import logoIcon from "../../assets/icons/logo.png";
+import cartIcon from "../../assets/icons/cart-icon.svg";
+import { useDispatch, useSelector } from "react-redux";
 import { selectCartCount } from "../../features/cart/cartSlice";
-import type { RootState } from "../../features/store";
-
+import type { RootState, AppDispatch } from "../../features/store";
+import { logout, selectIsAuth, selectUser } from "../../features/auth/authSlice";
 
 const Header: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const cartCount = useSelector((s: RootState) => selectCartCount(s));
+  const isAuth = useSelector(selectIsAuth);
+  const user = useSelector(selectUser);
+
+  const handleLogoClick = () => {
+    navigate("/");
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/", { replace: true });
+  };
 
   return (
     <HeaderContainer>
-        <Logo  src={logoIcon} alt="Logo"onClick={() => navigate('/')}/>
+      <Logo src={logoIcon} alt="Logo" onClick={handleLogoClick} />
       <Nav>
-        <NavLink to="/"  $isActive={location.pathname === '/'}>
+        <NavLink to="/" $isActive={location.pathname === "/"}>
           Home
         </NavLink>
-        <NavLink to="/matches"  $isActive={location.pathname === '/matches'}>
+        <NavLink to="/matches" $isActive={location.pathname === "/matches"}>
           Matches
         </NavLink>
-        <NavLink to="/teams"  $isActive={location.pathname === '/teams'}>
+        <NavLink to="/teams" $isActive={location.pathname === "/teams"}>
           Teams
         </NavLink>
-        <NavLink to="/groups"  $isActive={location.pathname === '/groups'}>
+        <NavLink to="/groups" $isActive={location.pathname === "/groups"}>
           Groups
         </NavLink>
-          <NavLink to="/login"  $isActive={location.pathname === '/login'}>
+
+        {isAuth && user ? (
+          <UserBox>
+            <UserName>{user.firstname}</UserName>
+            <LogoutButton type="button" onClick={handleLogout}>
+              Logout
+            </LogoutButton>
+          </UserBox>
+        ) : (
+          <NavLink to="/login" $isActive={location.pathname === "/login"}>
             Login
           </NavLink>
+        )}
       </Nav>
+
       <CartContainer to="/order">
-        <CartIcon src={cartIcon} alt="Cart"/>
+        <CartIcon src={cartIcon} alt="Cart" />
         <CartCount>{cartCount}</CartCount>
       </CartContainer>
     </HeaderContainer>
@@ -60,17 +83,20 @@ const Logo = styled.img`
   height: 80px;
   margin-right: auto;
   padding-left: 30px;
+  cursor: pointer;
 `;
 
 const Nav = styled.nav`
   display: flex;
   gap: 2.5rem;
   margin-right: 100px;
+  align-items: center;
 `;
 
-const NavLink = styled(Link)<{  $isActive: boolean }>`
+const NavLink = styled(Link)<{ $isActive: boolean }>`
   text-decoration: none;
-  color: ${(props) => (props. $isActive ? '#1c26dbff' : '#ffffffff')};  font-size: 15px;
+  color: ${(props) => (props.$isActive ? "#1c26dbff" : "#ffffffff")};
+  font-size: 15px;
   font-family: Inter, sans-serif;
   font-weight: 400;
   line-height: 20px;
@@ -107,4 +133,32 @@ const CartCount = styled.span`
   padding: 2px 6px;
   font-size: 0.75rem;
   font-weight: bold;
+`;
+
+const UserBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-size: 15px;
+`;
+
+const UserName = styled.span`
+  font-weight: 500;
+`;
+
+const LogoutButton = styled.button`
+  background: none;
+  border: none;
+  color: #e5e7eb;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
 `;

@@ -1,53 +1,96 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { signin, signup, getProfile, clearToken } from "../../api/auth";
-import type { UserProfile } from "../../Types/Auth";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { RootState } from "../store";
+import {
+  signinRequest,
+  signupRequest,
+  getProfileRequest,
+} from "../../services/api/authService";
+import { loadToken, clearToken } from "../../utils/secureStorage";
 
-interface AuthState {
-  user: UserProfile | null;
-  token: string | null;
-  loading: boolean;
-  error: string | null;
-}
-
-const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem("access_token"),
-  loading: false,
-  error: null,
+export type AuthUser = {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  birthDate: string;
 };
 
-export const registerUser = createAsyncThunk(
-  "auth/registerUser",
-  async (userData: Parameters<typeof signup>[0], { rejectWithValue }) => {
-    try {
-      const token = await signup(userData);
-      const profile = await getProfile();
-      return { token, user: profile };
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
+export type AuthState = {
+  token: string | null;
+  user: AuthUser | null;
+  loading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
+};
 
-export const loginUser = createAsyncThunk(
-  "auth/loginUser",
-  async (credentials: Parameters<typeof signin>[0], { rejectWithValue }) => {
-    try {
-      const token = await signin(credentials);
-      const profile = await getProfile();
-      return { token, user: profile };
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
+const initialState: AuthState = {
+  token: loadToken(),
+  user: null,
+  loading: false,
+  error: null,
+  isAuthenticated: !!loadToken(),
+};
 
-export const fetchProfile = createAsyncThunk("auth/fetchProfile", async (_, { rejectWithValue }) => {
+// LOGIN
+export const signin = createAsyncThunk<
+  void,
+  { email: string; password: string },
+  { rejectValue: string }
+>("auth/signin", async ({ email, password }, thunkApi) => {
   try {
-    const profile = await getProfile();
-    return profile;
-  } catch (err: any) {
-    return rejectWithValue(err.message);
+    const res = await signinRequest(email, password);
+
+    if (!res.success) {
+      return thunkApi.rejectWithValue("Invalid credentials");
+    }
+
+    return;
+  } catch {
+    return thunkApi.rejectWithValue("Invalid credentials");
+  }
+});
+
+// SIGNUP
+export const signup = createAsyncThunk<
+  void,
+  {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    birthDate: string;
+  },
+  { rejectValue: string }
+>("auth/signup", async (payload, thunkApi) => {
+  try {
+    const res = await signupRequest(payload);
+
+    if (!res.success) {
+      return thunkApi.rejectWithValue("Signup failed");
+    }
+
+    return;
+  } catch {
+    return thunkApi.rejectWithValue("Signup failed");
+  }
+});
+
+// PROFILE
+export const getProfile = createAsyncThunk<
+  AuthUser,
+  void,
+  { state: RootState; rejectValue: string }
+>("auth/getProfile", async (_, thunkApi) => {
+  try {
+    const res = await getProfileRequest();
+
+    if (!res.success) {
+      return thunkApi.rejectWithValue("Failed to load profile");
+    }
+
+    return res.data;
+  } catch {
+    return thunkApi.rejectWithValue("Failed to load profile");
   }
 });
 
@@ -56,44 +99,48 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout(state) {
-      state.user = null;
       state.token = null;
+      state.user = null;
+      state.isAuthenticated = false;
       clearToken();
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(registerUser.pending, (s) => {
-        s.loading = true;
-        s.error = null;
-      })
-      .addCase(registerUser.fulfilled, (s, a) => {
-        s.loading = false;
-        s.token = a.payload.token;
-        s.user = a.payload.user;
-      })
-      .addCase(registerUser.rejected, (s, a) => {
-        s.loading = false;
-        s.error = a.payload as string;
-      })
-      .addCase(loginUser.pending, (s) => {
-        s.loading = true;
-        s.error = null;
-      })
-      .addCase(loginUser.fulfilled, (s, a) => {
-        s.loading = false;
-        s.token = a.payload.token;
-        s.user = a.payload.user;
-      })
-      .addCase(loginUser.rejected, (s, a) => {
-        s.loading = false;
-        s.error = a.payload as string;
-      })
-      .addCase(fetchProfile.fulfilled, (s, a) => {
-        s.user = a.payload;
-      });
+    builder.addCase(signin.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(signin.fulfilled, (state) => {
+      state.loading = false;
+      state.isAuthenticated = true;
+    });
+    builder.addCase(signin.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Invalid credentials";
+    });
+
+    builder.addCase(signup.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(signup.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(signup.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Signup failed";
+    });
+
+    builder.addCase(getProfile.fulfilled, (state, action) => {
+      state.user = action.payload;
+    });
   },
 });
 
 export const { logout } = authSlice.actions;
+
+export const selectAuth = (state: RootState) => state.auth;
+export const selectUser = (state: RootState) => state.auth.user;
+export const selectIsAuth = (state: RootState) => state.auth.isAuthenticated;
+
 export default authSlice.reducer;
