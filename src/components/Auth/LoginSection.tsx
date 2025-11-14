@@ -27,6 +27,7 @@ export default LoginSection;
 
 const PageContainer = styled.main`
   min-height: 100vh;
+  margin-top: 60px !important;
   padding: 80px 20px;
   display: flex;
   align-items: center;
