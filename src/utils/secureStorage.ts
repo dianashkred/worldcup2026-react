@@ -1,3 +1,4 @@
+// src/utils/secureStorage.ts
 const SECRET = "wc2026_secret_key";
 
 export function saveToken(token: string): void {
