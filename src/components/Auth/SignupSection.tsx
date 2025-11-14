@@ -20,7 +20,7 @@ const PageContainer = styled.main`
   flex-direction: column;
   justify-content: center; 
   background-color: #f4f4f4; 
-  margin-top: 60px;
+  margin-top: 100px !important;
 `;
 const Title = styled.h1`
   font-size: 2rem;
