@@ -25,7 +25,15 @@ type CartState = {
   lastExceeded?: { matchId: number; category: string } | null;
 };
 
-const initialState: CartState = { items: [], lastExceeded: null };
+const storedItems = localStorage.getItem('cart_items');
+const initialState: CartState = {
+  items: storedItems ? JSON.parse(storedItems) : [],
+  lastExceeded: null,
+};
+
+const saveToLocalStorage = (items: CartItem[]) => {
+  localStorage.setItem('cart_items', JSON.stringify(items));
+};
 
 const keyEq = (
   a: { matchId: number; category: string | CartCategory },
@@ -56,13 +64,18 @@ const cartSlice = createSlice({
     clearCart(state) {
       state.items = [];
       state.lastExceeded = null;
+      saveToLocalStorage(state.items);
+
     },
     removeTicket(state, action: PayloadAction<{ matchId: number; category: string }>) {
       state.items = state.items.filter((it) => !keyEq(it, action.payload));
+      saveToLocalStorage(state.items);
+
     },
     updateQuantity(
       state,
       action: PayloadAction<{ matchId: number; category: string; quantity: number }>
+      
     ) {
       const it = state.items.find((x) => keyEq(x, action.payload));
       if (!it) return;
@@ -84,6 +97,8 @@ const cartSlice = createSlice({
         desired > hardCap
           ? { matchId: action.payload.matchId, category: action.payload.category }
           : null;
+      saveToLocalStorage(state.items);
+
     },
     addOrIncrease(
       state,
@@ -118,6 +133,8 @@ const cartSlice = createSlice({
         state.items.push({ matchId, category, price, quantity: toAdd, match: match ?? null });
       }
       state.lastExceeded = null;
+      saveToLocalStorage(state.items);
+
     },
   },
 });

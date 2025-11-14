@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {  useMemo, useState } from "react";
 import type { RootState } from "../../features/store";
 import {
   clearCart,
@@ -57,6 +57,8 @@ const OrderSection = () => {
       setProcessing(false);
     }
   };
+
+  
 
   if (rows.length === 0) {
     return (
