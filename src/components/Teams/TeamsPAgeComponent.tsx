@@ -1,14 +1,8 @@
 import { useEffect, useState, type FC } from 'react';
 import type { Team } from '../../Types/Team';
-
-
-
-
 import TeamsComponent from './TeamsComponent';
 import { getAllTeams } from '../../services/api/teamsService';
 import TeamsFilterComponent from './TeamsFilterComponent';
-
-
 
 
 const TeamsPageComponent: FC = () => {
@@ -47,7 +41,7 @@ const TeamsPageComponent: FC = () => {
       <span>
         <h1> The Teams: </h1>
         <TeamsFilterComponent filterTeams={filterTeams} />
-        {teams.map((team) => <TeamsComponent team={team} />)}
+        {teams.map((team) => <TeamsComponent key={team.id} team={team} />)}
       </span>
 
     </>
