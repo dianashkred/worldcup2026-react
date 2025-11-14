@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import {  useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { RootState } from "../../features/store";
 import {
   clearCart,
@@ -9,6 +9,7 @@ import {
   selectCartTotal,
   type CartItem,
 } from "../../features/cart/cartSlice";
+
 import CartList from "./CartList";
 import CartSummary from "./CartSummary";
 import Button from "../Button/Button";
@@ -37,50 +38,53 @@ const OrderSection = () => {
     try {
       const paidTickets = await checkoutCartViaApi(rows);
 
+      if (!paidTickets.length) {
+        throw new Error("Payment failed — no tickets returned.");
+      }
+
       dispatch(clearCart());
 
-      const count = paidTickets.length;
-      const baseText = "Your order has been successfully confirmed and paid.";
-      const withCount =
-        count > 0
-          ? `${baseText} You have ${count} ticket${count > 1 ? "s" : ""}.`
-          : baseText;
-
-      setSuccessMessage(withCount);
+      setSuccessMessage(
+        `Your order has been successfully confirmed. You have ${paidTickets.length} ticket(s).`
+      );
     } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unable to validate your cart. Please try again.";
-      setErrorMessage(message);
+      setErrorMessage(
+        err instanceof Error ? err.message : "Unable to validate your cart."
+      );
     } finally {
       setProcessing(false);
     }
   };
 
-  
+  // if user reached ticket limit error
+  if (errorMessage.includes("Limite de 6 tickets")) {
+    return (
+      <SectionContainer>
+        <SectionTitle>Your Cart</SectionTitle>
+        <ErrorBox>You already have 6 tickets for this match.</ErrorBox>
 
+        <ButtonsRow>
+          <Button label="Back to matches" onClick={() => navigate("/matches")} />
+          <Button label="View my tickets" onClick={() => navigate("/tickets")} />
+        </ButtonsRow>
+      </SectionContainer>
+    );
+  }
+
+  // Cart is empty
   if (rows.length === 0) {
     return (
       <SectionContainer>
         <SectionTitle>Your Cart</SectionTitle>
 
-        {successMessage && (
-          <ConfirmationMessage>{successMessage}</ConfirmationMessage>
-        )}
+        {successMessage && <ConfirmationMessage>{successMessage}</ConfirmationMessage>}
         {errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
 
         <EmptyMessage>Your cart is empty.</EmptyMessage>
 
         <ButtonsRow>
-          <Button
-            label="Back to matches"
-            onClick={() => navigate("/matches")}
-          />
-          <Button
-            label="View my tickets"
-            onClick={() => navigate("/tickets")}
-          />
+          <Button label="Back to matches" onClick={() => navigate("/matches")} />
+          <Button label="View my tickets" onClick={() => navigate("/tickets")} />
         </ButtonsRow>
       </SectionContainer>
     );
@@ -94,7 +98,7 @@ const OrderSection = () => {
       <CartSummary
         total={total}
         onConfirm={onConfirm}
-        disabled={processing || rows.length === 0}
+        disabled={processing}
         processing={processing}
       />
 
@@ -102,14 +106,8 @@ const OrderSection = () => {
         <AfterOrderBlock>
           <ConfirmationMessage>{successMessage}</ConfirmationMessage>
           <ButtonsRow>
-            <Button
-              label="Back to matches"
-              onClick={() => navigate("/matches")}
-            />
-            <Button
-              label="View my tickets"
-              onClick={() => navigate("/tickets")}
-            />
+            <Button label="Back to matches" onClick={() => navigate("/matches")} />
+            <Button label="View my tickets" onClick={() => navigate("/tickets")} />
           </ButtonsRow>
         </AfterOrderBlock>
       )}
@@ -120,6 +118,7 @@ const OrderSection = () => {
 };
 
 export default OrderSection;
+
 
 const SectionContainer = styled.section`
   display: flex;

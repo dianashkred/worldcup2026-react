@@ -5,7 +5,7 @@ import {
   signupRequest,
   getProfileRequest,
 } from "../../services/api/authService";
-import { loadToken, clearToken } from "../../utils/secureStorage";
+import { loadToken, clearToken, saveToken } from "../../utils/secureStorage";
 
 export type AuthUser = {
   id: number;
@@ -33,7 +33,7 @@ const initialState: AuthState = {
 
 // LOGIN
 export const signin = createAsyncThunk<
-  void,
+  string, // возвращаем token
   { email: string; password: string },
   { rejectValue: string }
 >("auth/signin", async ({ email, password }, thunkApi) => {
@@ -44,7 +44,10 @@ export const signin = createAsyncThunk<
       return thunkApi.rejectWithValue("Invalid credentials");
     }
 
-    return;
+    const token = res.data.access_token;
+    saveToken(token);
+
+    return token;
   } catch {
     return thunkApi.rejectWithValue("Invalid credentials");
   }
@@ -52,7 +55,7 @@ export const signin = createAsyncThunk<
 
 // SIGNUP
 export const signup = createAsyncThunk<
-  void,
+  string, 
   {
     firstname: string;
     lastname: string;
@@ -69,11 +72,15 @@ export const signup = createAsyncThunk<
       return thunkApi.rejectWithValue("Signup failed");
     }
 
-    return;
+    const token = res.data.access_token;
+    saveToken(token);
+
+    return token;
   } catch {
     return thunkApi.rejectWithValue("Signup failed");
   }
 });
+
 
 // PROFILE
 export const getProfile = createAsyncThunk<
@@ -110,8 +117,9 @@ const authSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(signin.fulfilled, (state) => {
+    builder.addCase(signin.fulfilled, (state, action) => {
       state.loading = false;
+      state.token = action.payload;
       state.isAuthenticated = true;
     });
     builder.addCase(signin.rejected, (state, action) => {
@@ -123,8 +131,10 @@ const authSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(signup.fulfilled, (state) => {
+    builder.addCase(signup.fulfilled, (state, action) => {
       state.loading = false;
+      state.token = action.payload;
+      state.isAuthenticated = true;
     });
     builder.addCase(signup.rejected, (state, action) => {
       state.loading = false;
