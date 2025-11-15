@@ -8,7 +8,7 @@ const HomePage: FC = () => {
   return(
   <>
     <Header/>
-    <HomeMainSection />;
+    <HomeMainSection />
     <Footer/>
   </>
   );

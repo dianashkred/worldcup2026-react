@@ -9,12 +9,20 @@ import Button from "../Button/Button";
 import { useDispatch } from "react-redux";
 import { removeTicket, updateQuantity } from "../../features/cart/cartSlice";
 import type { AppDispatch } from "../../features/store";
+import { useSelector } from "react-redux";
+import { selectCartCount } from "../../features/cart/cartSlice";
+import { MAX_GLOBAL } from "../../constants/tickets";
 
 type Props = { item: CartItem };
 
 const CartItemCard: FC<Props> = ({ item }) => {
   const d = useDispatch<AppDispatch>();
   const m = item.match; 
+
+  const totalInCart = useSelector(selectCartCount);
+  const otherAmount = totalInCart - item.quantity;
+  const maxForThisItem = Math.max(0, MAX_GLOBAL - otherAmount);
+
 
   return (
     <Card>
@@ -41,7 +49,7 @@ const CartItemCard: FC<Props> = ({ item }) => {
         <QtyCell>
           <QtyStepper
             value={item.quantity}
-            max={6}
+            max={maxForThisItem}
             onChange={(q) =>
               q <= 0
                 ? d(removeTicket({ matchId: item.matchId, category: String(item.category) }))

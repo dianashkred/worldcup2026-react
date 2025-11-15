@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState, AppDispatch } from "../store";
-import { MAX_PER_CATEGORY, MAX_PER_MATCH } from "../../constants/tickets";
+import { MAX_PER_CATEGORY, MAX_GLOBAL } from "../../constants/tickets";
 
 export type CartCategory = "VIP" | "CATEGORY_1" | "CATEGORY_2" | "CATEGORY_3";
 
@@ -40,22 +40,7 @@ const keyEq = (
   b: { matchId: number; category: string }
 ) => a.matchId === b.matchId && String(a.category) === String(b.category);
 
-const totalForMatch = (
-  items: CartItem[],
-  matchId: number,
-  excludeKey?: { matchId: number; category: string }
-) =>
-  items.reduce((sum, it) => {
-    if (it.matchId !== matchId) return sum;
-    if (
-      excludeKey &&
-      it.matchId === excludeKey.matchId &&
-      String(it.category) === String(excludeKey.category)
-    ) {
-      return sum;
-    }
-    return sum + it.quantity;
-  }, 0);
+
 
 const cartSlice = createSlice({
   name: "cart",
@@ -80,9 +65,19 @@ const cartSlice = createSlice({
       const it = state.items.find((x) => keyEq(x, action.payload));
       if (!it) return;
 
-      const takenByOthers = totalForMatch(state.items, action.payload.matchId, action.payload);
-      const allowedByMatch = Math.max(0, MAX_PER_MATCH - takenByOthers);
-      const hardCap = Math.min(MAX_PER_CATEGORY, allowedByMatch);
+
+      const totalWithoutThis = state.items.reduce((sum, it) =>
+        it.matchId === action.payload.matchId &&
+        it.category === action.payload.category
+          ? sum
+          : sum + it.quantity,
+        0
+      );
+
+      const remainingGlobal = Math.max(0, MAX_GLOBAL - totalWithoutThis);
+
+      const hardCap = Math.min(MAX_PER_CATEGORY, remainingGlobal);
+
 
       const desired = action.payload.quantity;
       const clamped = Math.max(0, Math.min(desired, hardCap));
@@ -115,10 +110,14 @@ const cartSlice = createSlice({
       const prev = existing?.quantity ?? 0;
 
       const remainingByCategory = Math.max(0, MAX_PER_CATEGORY - prev);
-      const takenByOthers = totalForMatch(state.items, matchId, { matchId, category });
-      const remainingByMatch = Math.max(0, MAX_PER_MATCH - takenByOthers);
+      
+      const totalInCart = state.items.reduce((s, it) => s + it.quantity, 0);
+      const remainingGlobal = Math.max(0, MAX_GLOBAL - totalInCart);
 
-      const toAdd = Math.max(0, Math.min(qty, remainingByCategory, remainingByMatch));
+      const toAdd = Math.max(
+        0,
+        Math.min(qty, remainingByCategory, remainingGlobal)
+      );
 
       if (toAdd <= 0) {
         state.lastExceeded = { matchId, category };

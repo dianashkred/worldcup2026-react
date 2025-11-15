@@ -16,10 +16,6 @@ const Header: FC = () => {
   const isAuth = useSelector(selectIsAuth);
   const user = useSelector(selectUser);
 
-  const handleLogoClick = () => {
-    navigate("/");
-  };
-
   const handleLogout = () => {
     dispatch(logout());
     navigate("/", { replace: true });
@@ -27,7 +23,7 @@ const Header: FC = () => {
 
   return (
     <HeaderContainer>
-      <Logo src={logoIcon} alt="Logo" onClick={handleLogoClick} />
+      <Logo src={logoIcon} alt="Logo" onClick={() => navigate("/")} />
       <Nav>
         <NavLink to="/" $isActive={location.pathname === "/"}>
           Home
@@ -43,12 +39,12 @@ const Header: FC = () => {
         </NavLink>
 
         {isAuth && user ? (
-          <UserBox>
-            <UserName>{user.firstname}</UserName>
-            <LogoutButton type="button" onClick={handleLogout}>
-              Logout
-            </LogoutButton>
-          </UserBox>
+          <>
+            <NavLink to="/tickets" $isActive={location.pathname === "/tickets"}>
+            {user.firstname}
+            </NavLink>
+            <LogoutLink onClick={handleLogout}>Logout</LogoutLink>
+          </>
         ) : (
           <NavLink to="/login" $isActive={location.pathname === "/login"}>
             Login
@@ -57,7 +53,7 @@ const Header: FC = () => {
       </Nav>
 
       <CartContainer to="/order">
-        <CartIcon src={cartIcon} alt="Cart" />
+        <CartIcon src={cartIcon} alt="cart" />
         <CartCount>{cartCount}</CartCount>
       </CartContainer>
     </HeaderContainer>
@@ -94,8 +90,8 @@ const Nav = styled.nav`
 `;
 
 const NavLink = styled(Link)<{ $isActive: boolean }>`
-  text-decoration: none;
   color: ${(props) => (props.$isActive ? "#1c26dbff" : "#ffffffff")};
+  text-decoration: none;
   font-size: 15px;
   font-family: Inter, sans-serif;
   font-weight: 400;
@@ -104,6 +100,18 @@ const NavLink = styled(Link)<{ $isActive: boolean }>`
 
   &:hover {
     color: #4b57dbff;
+  }
+`;
+
+const LogoutLink = styled.button`
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+
+  &:hover {
+    color: #ff6666;
   }
 `;
 
@@ -135,30 +143,3 @@ const CartCount = styled.span`
   font-weight: bold;
 `;
 
-const UserBox = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #ffffff;
-  font-size: 15px;
-`;
-
-const UserName = styled.span`
-  font-weight: 500;
-`;
-
-const LogoutButton = styled.button`
-  background: none;
-  border: none;
-  color: #e5e7eb;
-  font-size: 13px;
-  cursor: pointer;
-  padding: 0;
-  opacity: 0.85;
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 1;
-    text-decoration: underline;
-  }
-`;

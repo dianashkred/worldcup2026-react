@@ -2,19 +2,19 @@ import type { FC } from "react";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../features/store";
+import type { AppDispatch } from "../../features/store";
 import { getMatchAvailability } from "../../services/api/matchesService";
 import type { CategoryApi } from "../../Types/Match";
-import { addTicketWithMatchData, selectCountByMatch } from "../../features/cart/cartSlice";
+import { addTicketWithMatchData, selectCartCount } from "../../features/cart/cartSlice";
 import { formatCategoryLabel } from "../../utils/categoryLabel";
 import Button from "../Button/Button";
 import QtyStepper from "../QtyInput/QtyStepper";
 import type { MatchSummary } from "../../features/cart/cartSlice";
-import { MAX_PER_CATEGORY as MAX_QTY, MAX_PER_MATCH } from "../../constants/tickets";
+import { MAX_PER_CATEGORY as MAX_QTY, MAX_GLOBAL } from "../../constants/tickets";
 
 const CATEGORY_ORDER = ["VIP", "CATEGORY_1", "CATEGORY_2", "CATEGORY_3"] as const;
 type CategoryOrderTuple = typeof CATEGORY_ORDER;
-type CategoryKey = CategoryOrderTuple[number]; // равен CategoryApi
+type CategoryKey = CategoryOrderTuple[number]; 
 
 type Props = {
   matchId: number;
@@ -43,7 +43,7 @@ const MatchTicketPanel: FC<Props> = ({ matchId, match }) => {
   const [error, setError] = useState<string | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
-  const inCartForMatch = useSelector((s: RootState) => selectCountByMatch(s, matchId));
+  const totalInCart = useSelector(selectCartCount);
 
   useEffect(() => {
     (async () => {
@@ -85,8 +85,8 @@ const MatchTicketPanel: FC<Props> = ({ matchId, match }) => {
 
   const maxFor = (key: CategoryKey): number => {
     const localOthers = totalLocal - counts[key];
-    const remainingByMatch = Math.max(0, MAX_PER_MATCH - inCartForMatch - localOthers);
-    return Math.max(0, Math.min(MAX_QTY, availability[key] ?? Number.POSITIVE_INFINITY, remainingByMatch));
+    const remainingGlobal = Math.max(0, MAX_GLOBAL - totalInCart - localOthers);
+    return Math.min(MAX_QTY, availability[key], remainingGlobal);
   };
 
   const helperFor = (key: CategoryKey): { text: string; kind: "ok" | "warn" } => {
@@ -94,7 +94,7 @@ const MatchTicketPanel: FC<Props> = ({ matchId, match }) => {
     const remainingHere = Math.max(0, cap - counts[key]);
 
     if (cap === 0 || remainingHere === 0) {
-      return { text: `Match limit reached (${MAX_PER_MATCH})`, kind: "warn" };
+      return { text: `Global ticket limit reached (${MAX_GLOBAL})`, kind: "warn" };
     }
 
     return { text: `You can add up to ${remainingHere}`, kind: "ok" };
