@@ -3,7 +3,7 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import SignupSection from '../components/Auth/SignupSection';
 
-const LoginPage: FC = () => {
+const SignupPage: FC = () => {
   return(
   <>
     <Header/>
@@ -13,4 +13,4 @@ const LoginPage: FC = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;
