@@ -12,6 +12,7 @@ import SignupPage from './pages/SignupPage';
 import TicketsPage from './pages/TicketsPage';
 
 const App: FC = () => {
+
  return (
     <div className="App">
       <Router>

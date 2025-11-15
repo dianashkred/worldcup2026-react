@@ -34,8 +34,6 @@ const Container = styled.div`
   gap: 20px;               
 `;
 
-
-
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;

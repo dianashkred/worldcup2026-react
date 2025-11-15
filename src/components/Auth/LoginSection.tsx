@@ -17,7 +17,7 @@ const LoginSection: FC = () => {
 
   return (
     <PageContainer>
-        <Title>Sign in</Title>
+        <Title>Log in</Title>
         <LoginForm redirectPath={from} infoMessage={infoMessage} />
     </PageContainer>
   );

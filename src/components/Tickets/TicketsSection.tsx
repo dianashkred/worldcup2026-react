@@ -1,37 +1,14 @@
-import type { FC } from "react";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { getAllTickets } from "../../services/api/ticketsService";
-import type { Ticket, TicketStatus } from "../../Types/Ticket";
+import { getAllTickets, paySingleTicket } from "../../services/api/ticketsService";
+import PaymentModal from "./PaymentModal";
+import TicketsList from "./TicketsList";
+import TicketsListPending from "./TicketsListPending";
+import { groupByStatus } from "./groupTickets";
+import type { GroupedTickets } from "./groupTickets";
 import Button from "../Button/Button";
 
-type GroupedTickets = {
-  pending: Ticket[];
-  confirmed: Ticket[];
-  used: Ticket[];
-  other: Ticket[];
-};
-
-function groupByStatus(tickets: Ticket[]): GroupedTickets {
-  const grouped: GroupedTickets = {
-    pending: [],
-    confirmed: [],
-    used: [],
-    other: [],
-  };
-
-  tickets.forEach((t) => {
-    const s: TicketStatus | string = t.status;
-    if (s === "pending_payment") grouped.pending.push(t);
-    else if (s === "confirmed") grouped.confirmed.push(t);
-    else if (s === "used") grouped.used.push(t);
-    else grouped.other.push(t);
-  });
-
-  return grouped;
-}
-
-const TicketsSection: FC = () => {
+const TicketsSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [grouped, setGrouped] = useState<GroupedTickets>({
@@ -41,133 +18,117 @@ const TicketsSection: FC = () => {
     other: [],
   });
 
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [payLoading, setPayLoading] = useState(false);
+  const [payError, setPayError] = useState("");
+
+  // LOAD USER TICKETS
   useEffect(() => {
     let cancelled = false;
-
     (async () => {
       try {
         const tickets = await getAllTickets();
-        if (cancelled) return;
-        setGrouped(groupByStatus(tickets));
+        if (!cancelled) setGrouped(groupByStatus(tickets));
       } catch (err) {
-        if (cancelled) return;
-        const msg =
-          err instanceof Error
-            ? err.message
-            : "Unable to load your tickets history.";
-        setError(msg);
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Unable to load your tickets.");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
-
     return () => {
       cancelled = true;
     };
   }, []);
 
+  // PAYMENT HANDLER
+  const handleConfirmPayment = async () => {
+    setPayLoading(true);
+    setPayError("");
+
+    try {
+      await paySingleTicket();
+      const tickets = await getAllTickets();
+      setGrouped(groupByStatus(tickets));
+      setShowPayModal(false);
+    } catch {
+      setPayError("Payment failed. Please try again.");
+    } finally {
+      setPayLoading(false);
+    }
+  };
+
   return (
     <Page>
       <Title>My tickets</Title>
 
-      {loading && <InfoText>Loading your tickets…</InfoText>}
+      {loading && <Info>Loading your tickets…</Info>}
       {error && <ErrorBox>{error}</ErrorBox>}
 
       {!loading && !error && (
         <>
-          <SectionBlock>
-            <SectionHeading>Upcoming tickets (confirmed)</SectionHeading>
+          {/* CONFIRMED */}
+          <Block>
+            <Heading>Upcoming tickets (confirmed)</Heading>
             {grouped.confirmed.length === 0 ? (
-              <InfoText>No confirmed tickets yet.</InfoText>
+              <Info>No confirmed tickets yet.</Info>
             ) : (
               <TicketsList tickets={grouped.confirmed} />
             )}
-          </SectionBlock>
+          </Block>
 
+          {/* PENDING */}
           {grouped.pending.length > 0 && (
-            <SectionBlock>
-              <SectionHeading>Pending payment</SectionHeading>
-              <InfoText>
-                These tickets are still pending on the server.
-              </InfoText>
-              <TicketsList tickets={grouped.pending} />
-            </SectionBlock>
+            <Block>
+              <Heading>Pending payment</Heading>
+              <PendingInfo>
+                You have {grouped.pending.length} unpaid ticket(s).
+              </PendingInfo>
+
+              <TicketsListPending tickets={grouped.pending} />
+
+              <PayWrapper>
+                <Button label="Pay all tickets" onClick={() => setShowPayModal(true)} />
+              </PayWrapper>
+            </Block>
           )}
 
+          {/* USED */}
           {grouped.used.length > 0 && (
-            <SectionBlock>
-              <SectionHeading>Used tickets</SectionHeading>
+            <Block>
+              <Heading>Used tickets</Heading>
               <TicketsList tickets={grouped.used} />
-            </SectionBlock>
+            </Block>
           )}
 
+          {/* OTHER */}
           {grouped.other.length > 0 && (
-            <SectionBlock>
-              <SectionHeading>Other tickets</SectionHeading>
+            <Block>
+              <Heading>Other tickets</Heading>
               <TicketsList tickets={grouped.other} />
-            </SectionBlock>
+            </Block>
           )}
 
-          <BackRow>
+          <Back>
             <Button label="Back to matches" onClick={() => (window.location.href = "/matches")} />
-          </BackRow>
+          </Back>
         </>
+      )}
+
+      {showPayModal && (
+        <PaymentModal
+          loading={payLoading}
+          error={payError}
+          onConfirm={handleConfirmPayment}
+          onCancel={() => setShowPayModal(false)}
+        />
       )}
     </Page>
   );
 };
 
 export default TicketsSection;
-
-
-type TicketsListProps = { tickets: Ticket[] };
-
-const TicketsList = ({ tickets }: TicketsListProps) => (
-  <TicketsGrid>
-    {tickets.map((t) => (
-      <TicketCard key={t.id}>
-        <TicketHeader>
-          <strong>
-            {t.match?.homeTeam} vs {t.match?.awayTeam}
-          </strong>
-        </TicketHeader>
-        <TicketBody>
-          <p>
-            <Label>Category:</Label> {t.category}
-          </p>
-          <p>
-            <Label>Price:</Label> ${t.price.toFixed(2)}
-          </p>
-          {t.status && (
-            <p>
-              <Label>Status:</Label> {t.status}
-            </p>
-          )}
-          {t.seatNumber && (
-            <p>
-              <Label>Seat:</Label> {t.seatNumber}
-            </p>
-          )}
-          {t.match && (
-            <p>
-              <Label>Stadium:</Label> {t.match.stadium}
-            </p>
-          )}
-          {t.paymentDate && (
-            <p>
-              <Label>Paid at:</Label> {new Date(t.paymentDate).toLocaleString()}
-            </p>
-          )}
-          {t.expiresAt && (
-            <p>
-              <Label>Expires at:</Label> {new Date(t.expiresAt).toLocaleString()}
-            </p>
-          )}
-        </TicketBody>
-      </TicketCard>
-    ))}
-  </TicketsGrid>
-);
 
 
 const Page = styled.main`
@@ -184,23 +145,27 @@ const Title = styled.h1`
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 2rem;
-  color: #000;
 `;
 
-const SectionBlock = styled.section`
+const Block = styled.section`
   width: 100%;
   max-width: 1200px;
   margin-bottom: 32px;
 `;
 
-const SectionHeading = styled.h2`
+const Heading = styled.h2`
   font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 0.8rem;
 `;
 
-const InfoText = styled.p`
-  font-size: 0.95rem;
+const PendingInfo = styled.p`
+  color: #8a6b00;
+  font-weight: 600;
+  margin-bottom: 10px;
+`;
+
+const Info = styled.p`
   color: #555;
 `;
 
@@ -210,41 +175,15 @@ const ErrorBox = styled.div`
   padding: 0.8rem 1rem;
   border-radius: 6px;
   margin-bottom: 1.4rem;
-  max-width: 600px;
-  text-align: center;
 `;
 
-const TicketsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+const PayWrapper = styled.div`
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
 `;
 
-const TicketCard = styled.article`
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 12px 14px;
-  border: 1px solid #ddd;
-`;
-
-const TicketHeader = styled.header`
-  margin-bottom: 8px;
-`;
-
-const TicketBody = styled.div`
-  font-size: 0.9rem;
-  color: #333;
-
-  p {
-    margin: 2px 0;
-  }
-`;
-
-const Label = styled.span`
-  font-weight: 600;
-`;
-
-const BackRow = styled.div`
+const Back = styled.div`
   margin-top: 24px;
   display: flex;
   justify-content: center;
