@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 import Button from '../Button/Button';
 import styled from 'styled-components';
-import fifa26 from '../../assets/home/Fifa26.jpg'
-import weAre26 from '../../assets/home/WeAre26.jpg'
+import fifa26 from '../../assets/images/home/fifa26.jpg'
+import weAre26 from '../../assets/images/home/weAre26.jpg'
 
 
 const HomeMainSection: FC = () => {
