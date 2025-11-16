@@ -61,7 +61,7 @@ const OrderSection = () => {
     return (
       <SectionContainer>
         <SectionTitle>Your Cart</SectionTitle>
-        <ErrorBox>You already have 6 tickets for this match.</ErrorBox>
+        <ErrorBox>You already have 6 tickets.</ErrorBox>
 
         <ButtonsRow>
           <Button label="Back to matches" onClick={() => navigate("/matches")} />
